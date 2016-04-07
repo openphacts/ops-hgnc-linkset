@@ -1,0 +1,101 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.openphacts.data</groupId>
+  <artifactId>ops-hgnc-linkset</artifactId>
+  <version>0.0.20160407-SNAPSHOT</version>
+  <packaging>data</packaging>
+  <name>Open PHACTS HGNC id to HGNC symbol linkset</name>
+  <url>https://github.com/openphacts/ops-hgnc-linksets</url>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+  </properties>
+  <scm>
+    <connection>scm:git:https://github.com/openphacts/ops-hgnc-linksets.git</connection>
+    <developerConnection>scm:git:git@github.com:openphacts/ops-hgnc-linksets.git</developerConnection>
+    <url>https://github.com/openphacts/ops-hgnc-linksets</url>
+    <tag>HEAD</tag>
+  </scm>
+
+  <licenses>
+    <license>
+      <name>HGNC Data release policy</name>
+      <url>http://www.genenames.org/about/overview</url>
+	<comments>
+# Data release policy
+
+No restrictions are imposed on access to, or use of, the data provided by the
+HGNC, which are provided to enhance knowledge and encourage progress in the
+scientific community. The HGNC provide these data in good faith, but make no
+warranty, express or implied, nor assume any legal liability or responsibility
+for any purpose for which they are used.
+
+# Guidelines on use of data in publications (copyright and licensing)
+It is a condition of our funding from NIH and the Wellcome Trust that the
+nomenclature and information we provide is freely available to all. Anyone may
+use the HGNC data, but we request that they reference the "HUGO Gene
+Nomenclature Committee at the European Bioinformatics Institute" and the
+website where possible.  
+</comments>
+    </license>
+  </licenses>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>no.s11.dataplugin</groupId>
+          <artifactId>data-maven-plugin</artifactId>
+          <version>0.0.6</version>
+          <extensions>true</extensions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>bintray-stain-maven</id>
+      <name>bintray-plugins</name>
+      <url>http://dl.bintray.com/stain/maven</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
+
+
+  <distributionManagement>
+    <repository>
+        <id>b6e18a12df08</id>
+        <name>b6e18a12df08-releases</name>
+        <url>http://data.openphacts.org/artifactory/data-maven</url>
+    </repository>
+    <snapshotRepository>
+        <id>b6e18a12df08</id>
+        <name>b6e18a12df08-snapshots</name>
+        <url>http://data.openphacts.org/artifactory/data-maven-dev</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+
+  <repositories>
+    <repository>
+      <id>ops-data</id>
+      <name>Open PHACTS data repository</name>
+      <url>http://data.openphacts.org/artifactory/data-maven</url>
+      <releases />
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>ops-data-dev</id>
+      <name>Open PHACTS data snapshot repository</name>
+      <url>http://data.openphacts.org/artifactory/data-maven-dev</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots />
+    </repository>
+  </repositories>
+
+</project>
