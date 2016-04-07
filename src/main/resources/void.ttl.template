@@ -45,3 +45,4 @@
     void:linkPredicate skos:exactMatch ;
     dul:expresses <http://semanticscience.org/resource/SIO_001171> ;
     pav:createdWith <https://raw.github.com/openphacts/ops-platform-setup/master/scripts/hgnc/extractHgncLinkset.sh> .
+
