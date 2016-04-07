@@ -36,7 +36,7 @@ It is a condition of our funding from NIH and the Wellcome Trust that the
 nomenclature and information we provide is freely available to all. Anyone may
 use the HGNC data, but we request that they reference the "HUGO Gene
 Nomenclature Committee at the European Bioinformatics Institute" and the
-website where possible.  
+website where possible.
 </comments>
     </license>
   </licenses>
@@ -48,6 +48,112 @@ website where possible.
           <version>0.0.6</version>
           <extensions>true</extensions>
       </plugin>
+      <plugin>
+        <groupId>io.fabric8</groupId>
+        <artifactId>docker-maven-plugin</artifactId>
+        <version>0.14.2</version>
+        <configuration>
+          <verbose>true</verbose>
+          <images>
+            <image>
+              <name>appropriate/curl</name>
+              <alias>curl</alias>
+              <run>
+                <cmd><arg>sh</arg><arg>/target/classes/extractHgncLinkset.sh</arg></cmd>
+                <volumes>
+                  <bind>
+                    <volume>${project.build.directory}:/target</volume>
+                  </bind>
+                </volumes>
+                <wait>
+                  <log>^DONE</log>
+                </wait>
+                <log />
+              </run>
+            </image>
+          </images>
+        </configuration>
+        <executions>
+           <execution>
+              <id>start</id>
+              <phase>process-resources</phase>
+              <goals><goal>start</goal></goals>
+            </execution>
+            <!--
+              <execution>
+                 <id>stop</id>
+                 <phase>compile</phase>
+                 <goals><goal>stop</goal></goals>
+               </execution>
+           -->
+          </executions>
+      </plugin>
+              <plugin>
+                  <groupId>com.alexecollins.maven.plugin</groupId>
+                  <artifactId>script-maven-plugin</artifactId>
+                  <version>1.0.0</version>
+                  <configuration>
+                    <language>beanshell</language>
+                    <script><![CDATA[
+                      import org.apache.jena.rdf.model.*;
+                      import org.apache.jena.riot.*;
+                      import org.apache.jena.vocabulary.RDF;
+
+                      dataDir = new File(project.getBuild().getOutputDirectory(), "data");
+                      voidFile = new File(dataDir, "void.ttl");
+
+                      System.out.println("Testing " + voidFile);
+                      if (! voidFile.isFile()) {
+                        throw new Exception("Missing void file: " + voidFile);
+                      }
+                      voidModel = RDFDataMgr.loadModel(voidFile.getAbsolutePath(), Lang.TURTLE);
+
+                      linksetType = voidModel.createResource("http://rdfs.org/ns/void#Linkset");
+                      tripleProp = voidModel.createProperty("http://rdfs.org/ns/void#", "triples");
+
+                      linkset = voidModel.listSubjectsWithProperty(RDF.type, linksetType).nextResource();
+                      System.out.println("Linkset: " + linkset);
+                      triples = voidModel.getRequiredProperty(linkset, tripleProp).getLong();
+                      System.out.println("void:triples " + triples);
+
+                      linksetFile = new File(dataDir, "hgnc-to-hgnc.symbol-linkset.ttl");
+
+                      System.out.println("Testing " + linksetFile);
+                      if (! linksetFile.isFile()) {
+                        throw new Exception("Missing linkset file: " + linksetFile);
+                      }
+                      linksetModel = RDFDataMgr.loadModel(linksetFile.getAbsolutePath(), Lang.TURTLE);
+                      actualTriples = linksetModel.size();
+                      System.out.println("linkset triples: " + linksetModel.size());
+
+                      // Should be the same, +/- 10 for some metadata
+                      if (triples - 10 > actualTriples || triples + 10 < actualTriples) {
+                        throw new Exception("void:triples " + triples + " does not match linkset triple count " + actualTriples);
+                      }
+                      System.out.println("OK");
+                    ]]></script>
+                  </configuration>
+                  <executions>
+                    <execution>
+                      <phase>package</phase>
+                      <goals>
+                          <goal>execute</goal>
+                      </goals>
+                    </execution>
+                  </executions>
+                  <dependencies>
+                    <dependency>
+                      <groupId>org.apache-extras.beanshell</groupId>
+                      <artifactId>bsh</artifactId>
+                      <version>2.0b6</version>
+                    </dependency>
+                    <dependency>
+                      <groupId>org.apache.jena</groupId>
+                      <artifactId>jena-arq</artifactId>
+                      <version>3.0.1</version>
+                    </dependency>
+                  </dependencies>
+              </plugin>
     </plugins>
   </build>
 
